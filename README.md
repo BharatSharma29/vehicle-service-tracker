@@ -33,7 +33,7 @@ Create a file called `.env` inside the **backend** directory.
 
 Example `.env` file:
 
-PORT=5000
+PORT=5001
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/vehicleTracker
 
 Explanation:
@@ -49,7 +49,7 @@ Run the backend server.
 
 npm run dev
 
-The backend API will run at: http://localhost:5000
+The backend API will run at: http://localhost:5001
 
 ---
 
@@ -73,7 +73,7 @@ Create a `.env` file inside the **frontend** folder.
 
 Example:
 
-REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_API_URL=http://localhost:5001/api
 
 This variable tells the React application where the backend API is located.
 

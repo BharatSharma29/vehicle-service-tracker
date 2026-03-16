@@ -3,7 +3,9 @@ import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-function VehicleForm() {
+function VehicleForm({ fetchVehicles }) {
+
+    const currentYear = new Date().getFullYear();
 
     const [vehicle, setVehicle] = useState({
         make: "",
@@ -11,6 +13,9 @@ function VehicleForm() {
         year: "",
         mileage: ""
     });
+
+    const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
 
     const handleChange = (e) => {
 
@@ -21,15 +26,51 @@ function VehicleForm() {
 
     };
 
+    const validateForm = () => {
+
+        if (!vehicle.make.match(/^[A-Za-z ]+$/)) {
+            return "Vehicle make should contain only letters.";
+        }
+
+        if (vehicle.model.trim() === "") {
+            return "Vehicle model is required.";
+        }
+
+        if (vehicle.year < 1900 || vehicle.year > currentYear) {
+            return `Year must be between 1900 and ${currentYear}.`;
+        }
+
+        if (vehicle.mileage <= 0) {
+            return "Mileage must be a positive number.";
+        }
+
+        return null;
+
+    };
+
     const submitVehicle = async (e) => {
 
         e.preventDefault();
+
+        setError("");
+        setMessage("");
+
+        const validationError = validateForm();
+
+        if (validationError) {
+
+            setError(validationError);
+            return;
+
+        }
 
         try {
 
             await axios.post(`${API_URL}/vehicles`, vehicle);
 
-            alert("Vehicle added successfully");
+            setMessage("Vehicle added successfully ✓");
+
+            fetchVehicles();
 
             setVehicle({
                 make: "",
@@ -38,56 +79,71 @@ function VehicleForm() {
                 mileage: ""
             });
 
-        } catch (error) {
+            setTimeout(() => {
+                setMessage("");
+            }, 3000);
 
-            console.error("Error adding vehicle:", error);
+        } catch (err) {
+
+            console.error(err);
+
+            setError("Failed to add vehicle.");
 
         }
+
     };
 
     return (
 
-        <form onSubmit={submitVehicle}>
+        <div>
 
-            <input
-                name="make"
-                placeholder="Make"
-                value={vehicle.make}
-                onChange={handleChange}
-                required
-            />
+            <form onSubmit={submitVehicle}>
 
-            <input
-                name="model"
-                placeholder="Model"
-                value={vehicle.model}
-                onChange={handleChange}
-                required
-            />
+                <input
+                    name="make"
+                    placeholder="Make"
+                    value={vehicle.make}
+                    onChange={handleChange}
+                    required
+                />
 
-            <input
-                name="year"
-                type="number"
-                placeholder="Year"
-                value={vehicle.year}
-                onChange={handleChange}
-                required
-            />
+                <input
+                    name="model"
+                    placeholder="Model"
+                    value={vehicle.model}
+                    onChange={handleChange}
+                    required
+                />
 
-            <input
-                name="mileage"
-                type="number"
-                placeholder="Mileage"
-                value={vehicle.mileage}
-                onChange={handleChange}
-                required
-            />
+                <input
+                    name="year"
+                    type="number"
+                    placeholder="Year"
+                    value={vehicle.year}
+                    onChange={handleChange}
+                    required
+                />
 
-            <button type="submit">Add Vehicle</button>
+                <input
+                    name="mileage"
+                    type="number"
+                    placeholder="Mileage"
+                    value={vehicle.mileage}
+                    onChange={handleChange}
+                    required
+                />
 
-        </form>
+                <button type="submit">Add Vehicle</button>
+
+            </form>
+
+            {message && <p className="success-message">{message}</p>}
+            {error && <p className="error-message">{error}</p>}
+
+        </div>
 
     );
+
 }
 
 export default VehicleForm;

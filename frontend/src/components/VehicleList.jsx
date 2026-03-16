@@ -1,31 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-function VehicleList() {
-
-    const [vehicles, setVehicles] = useState([]);
-
-    useEffect(() => {
-        fetchVehicles();
-    }, []);
-
-    const fetchVehicles = async () => {
-
-        try {
-
-            const response = await axios.get(`${API_URL}/vehicles`);
-
-            setVehicles(response.data);
-
-        } catch (error) {
-
-            console.error("Error fetching vehicles:", error);
-
-        }
-
-    };
+function VehicleList({ vehicles, fetchVehicles }) {
 
     const deleteVehicle = async (id) => {
 
@@ -43,31 +21,66 @@ function VehicleList() {
 
     };
 
+    if (vehicles.length === 0) {
+
+        return <p className="empty">No vehicles added yet.</p>;
+
+    }
+
     return (
 
-        <div>
+        <div className="vehicle-list">
 
             <h2>Vehicle List</h2>
 
-            {vehicles.map(vehicle => (
+            <table className="vehicle-table">
 
-                <div key={vehicle._id}>
+                <thead>
 
-                    <p>
-                        {vehicle.make} {vehicle.model} - {vehicle.year} - {vehicle.mileage} km
-                    </p>
+                    <tr>
+                        <th>Make</th>
+                        <th>Model</th>
+                        <th>Year</th>
+                        <th>Mileage (km)</th>
+                        <th>Action</th>
+                    </tr>
 
-                    <button onClick={() => deleteVehicle(vehicle._id)}>
-                        Delete
-                    </button>
+                </thead>
 
-                </div>
+                <tbody>
 
-            ))}
+                    {vehicles.map(vehicle => (
+
+                        <tr key={vehicle._id}>
+
+                            <td>{vehicle.make}</td>
+                            <td>{vehicle.model}</td>
+                            <td>{vehicle.year}</td>
+                            <td>{vehicle.mileage}</td>
+
+                            <td>
+
+                                <button
+                                    className="delete-btn"
+                                    onClick={() => deleteVehicle(vehicle._id)}
+                                >
+                                    Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    ))}
+
+                </tbody>
+
+            </table>
 
         </div>
 
     );
+
 }
 
 export default VehicleList;
