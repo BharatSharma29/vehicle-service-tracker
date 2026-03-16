@@ -8,7 +8,7 @@ Follow these steps to run the application on your local machine.
 
 Clone the project repository from GitHub.
 
-git clone <repository-url>
+git clone https://github.com/BharatSharma29/vehicle-service-tracker
 
 Move into the project directory.
 
