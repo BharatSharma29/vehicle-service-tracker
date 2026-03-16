@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+/*
+API base URL from environment variable.
+This allows the frontend to communicate with
+the backend server hosted on AWS EC2.
+*/
+const API_URL = process.env.REACT_APP_API_URL;
+
 function VehicleList() {
 
     const [vehicles, setVehicles] = useState([]);
@@ -10,29 +17,50 @@ function VehicleList() {
     }, []);
 
     const fetchVehicles = async () => {
-        const res = await axios.get("http://localhost:5000/api/vehicles");
-        setVehicles(res.data);
+
+        try {
+
+            const response = await axios.get(`${API_URL}/vehicles`);
+
+            setVehicles(response.data);
+
+        } catch (error) {
+
+            console.error("Error fetching vehicles:", error);
+
+        }
     };
 
     const deleteVehicle = async (id) => {
-        await axios.delete(`http://localhost:5000/api/vehicles/${id}`);
-        fetchVehicles();
+
+        try {
+
+            await axios.delete(`${API_URL}/vehicles/${id}`);
+
+            fetchVehicles();
+
+        } catch (error) {
+
+            console.error("Error deleting vehicle:", error);
+
+        }
     };
 
     return (
+
         <div>
 
             <h2>Vehicle List</h2>
 
-            {vehicles.map(v => (
+            {vehicles.map(vehicle => (
 
-                <div key={v._id}>
+                <div key={vehicle._id}>
 
                     <p>
-                        {v.make} {v.model} - {v.year} - {v.mileage} km
+                        {vehicle.make} {vehicle.model} - {vehicle.year} - {vehicle.mileage} km
                     </p>
 
-                    <button onClick={() => deleteVehicle(v._id)}>
+                    <button onClick={() => deleteVehicle(vehicle._id)}>
                         Delete
                     </button>
 
@@ -41,6 +69,7 @@ function VehicleList() {
             ))}
 
         </div>
+
     );
 }
 

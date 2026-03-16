@@ -1,10 +1,19 @@
+# Node dependencies
 node_modules/
+
+# Environment variables
 .env
-.DS_Store
-build/
-dist/
-logs/
+
+# Logs
+logs
 *.log
-coverage/
-.vscode/
-.idea/
+
+# React build
+frontend/build/
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode
+.idea
