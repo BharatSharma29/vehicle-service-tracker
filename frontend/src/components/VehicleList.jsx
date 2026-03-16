@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-/*
-API base URL from environment variable.
-This allows the frontend to communicate with
-the backend server hosted on AWS EC2.
-*/
 const API_URL = process.env.REACT_APP_API_URL;
 
 function VehicleList() {
@@ -29,6 +24,7 @@ function VehicleList() {
             console.error("Error fetching vehicles:", error);
 
         }
+
     };
 
     const deleteVehicle = async (id) => {
@@ -44,6 +40,7 @@ function VehicleList() {
             console.error("Error deleting vehicle:", error);
 
         }
+
     };
 
     return (

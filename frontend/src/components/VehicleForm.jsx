@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-/*
-API base URL is stored in environment variable.
-This allows easy switching between local development
-and cloud deployment without modifying the code.
-*/
 const API_URL = process.env.REACT_APP_API_URL;
 
 function VehicleForm() {
@@ -18,10 +13,12 @@ function VehicleForm() {
     });
 
     const handleChange = (e) => {
+
         setVehicle({
             ...vehicle,
             [e.target.name]: e.target.value
         });
+
     };
 
     const submitVehicle = async (e) => {
@@ -49,6 +46,7 @@ function VehicleForm() {
     };
 
     return (
+
         <form onSubmit={submitVehicle}>
 
             <input
@@ -88,6 +86,7 @@ function VehicleForm() {
             <button type="submit">Add Vehicle</button>
 
         </form>
+
     );
 }
 
