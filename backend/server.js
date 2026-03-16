@@ -1,8 +1,9 @@
 /*
 Main backend server file.
 
-This file initializes the Express server,
-connects to the database and loads API routes.
+This initializes the Express server,
+loads middleware, connects to MongoDB,
+and registers API routes.
 */
 
 import express from "express";
@@ -11,19 +12,18 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import vehicleRoutes from "./routes/vehicleRoutes.js";
 
-// Load environment variables
 dotenv.config();
 
-// Connect to MongoDB database
+// Connect to database
 connectDB();
 
 const app = express();
 
-// Enable middleware
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Register API routes
+// API routes
 app.use("/api/vehicles", vehicleRoutes);
 
 // Port configuration

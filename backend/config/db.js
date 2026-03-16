@@ -1,9 +1,8 @@
 /*
-Database connection configuration file.
+Database configuration file.
 
-This file connects the backend server to the MongoDB Atlas
-cloud database using the connection string stored in the
-environment variable MONGO_URI.
+This file connects the Express backend server
+to the MongoDB Atlas cloud database.
 */
 
 import mongoose from "mongoose";
@@ -18,7 +17,7 @@ const connectDB = async () => {
 
     } catch (error) {
 
-        console.error("Database connection failed:", error.message);
+        console.error("MongoDB connection failed:", error.message);
 
         process.exit(1);
 
