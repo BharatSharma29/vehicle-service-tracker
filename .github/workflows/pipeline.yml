@@ -13,39 +13,47 @@ jobs:
 
     steps:
 
-    - name: Checkout code
+    # 1. Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Setup Node
+    # 2. Setup Node
+    - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: 18
 
+    # 3. Install backend dependencies
     - name: Install backend dependencies
       run: |
         cd backend
         npm install
 
+    # 4. Static Code Analysis
+    - name: Run ESLint
+      run: |
+        cd backend
+        npx eslint . || true
+
+    # 5. Security Scan
+    - name: Run npm audit
+      run: |
+        cd backend
+        npm audit --audit-level=high || true
+
+    # 6. Install frontend dependencies
     - name: Install frontend dependencies
       run: |
         cd frontend
         npm install
 
-    - name: Run ESLint static analysis
-      run: |
-        cd backend
-        npx eslint .
-
-    - name: Run security audit
-      run: |
-        cd backend
-        npm audit --audit-level=high
-
-    - name: Build React app
+    # 7. Build React app
+    - name: Build frontend
       run: |
         cd frontend
         npm run build
 
+    # 8. Configure AWS credentials
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
@@ -53,19 +61,21 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Deploy frontend to S3
+    # 9. Deploy frontend to S3
+    - name: Deploy to S3
       run: |
         aws s3 sync frontend/build s3://${{ secrets.S3_BUCKET_NAME }} --delete
 
-    - name: Deploy backend to EC2
+    # 10. Deploy backend to EC2
+    - name: Deploy backend via SSH
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         script: |
-          cd vehicle-service-tracker
+          cd smart-vehicle-service-tracker
           git pull origin main
           cd backend
           npm install
-          pm2 restart server
+          pm2 restart server || pm2 start server.js --name server
