@@ -61,7 +61,7 @@ jobs:
         script: |
 
           echo "📦 Pulling latest code..."
-          cd smart-vehicle-service-tracker
+          cd vehicle-service-tracker
           git pull origin main
 
           echo "📦 Installing backend..."
