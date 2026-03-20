@@ -133,7 +133,7 @@ function VehicleForm({ fetchVehicles }) {
                     required
                 />
 
-                <button type="submit">Add Vehicle</button>
+                <button type="submit">Add Wehicle</button>
 
             </form>
 
