@@ -45,13 +45,18 @@ jobs:
         cd frontend
         npm install
 
-    # 7. Build React app
+    # 7. ✅ Create frontend .env (IMPORTANT FIX)
+    - name: Create frontend .env
+      run: |
+        echo "REACT_APP_API_URL=/api" > frontend/.env
+
+    # 8. Build React app
     - name: Build frontend
       run: |
         cd frontend
         npm run build
 
-    # 8. Deploy to EC2 via SSH
+    # 9. Deploy to EC2 via SSH
     - name: Deploy to EC2
       uses: appleboy/ssh-action@v1.0.3
       with:
@@ -67,23 +72,27 @@ jobs:
           git fetch origin
           git reset --hard origin/main
 
-          echo "📦 Installing backend dependencies..."
+          echo "📦 Installing backend..."
           cd backend
           npm install
 
-          echo "🚀 Restarting backend with PM2..."
+          echo "🚀 Restarting backend..."
           pm2 restart server || pm2 start server.js --name server
 
-          echo "📦 Building frontend..."
+          echo "📦 Preparing frontend..."
           cd ../frontend
+
+          echo "⚙️ Creating .env on EC2..."
+          echo "REACT_APP_API_URL=/api" > .env
+
           npm install
           npm run build
 
-          echo "🌐 Deploying frontend to Nginx..."
+          echo "🌐 Deploying frontend..."
           sudo rm -rf /var/www/html/*
           sudo cp -r build/* /var/www/html/
 
           echo "🔁 Restarting Nginx..."
           sudo systemctl restart nginx
 
-          echo "✅ Deployment completed successfully!"
+          echo "✅ Deployment complete!"
