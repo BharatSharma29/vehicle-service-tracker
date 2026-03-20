@@ -49,7 +49,7 @@ function VehicleList({ vehicles, fetchVehicles }) {
 
                 <tbody>
 
-                    {vehicles.map(vehicle => (
+                    {vehicles?.map(vehicle => (
 
                         <tr key={vehicle._id}>
 
