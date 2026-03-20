@@ -60,15 +60,18 @@ jobs:
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         script: |
 
-          echo "📦 Pulling latest code..."
-          cd vehicle-service-tracker
-          git pull origin main
+          echo "📦 Navigating to project..."
+          cd /home/ubuntu/vehicle-service-tracker
 
-          echo "📦 Installing backend..."
+          echo "📦 Pulling latest code..."
+          git fetch origin
+          git reset --hard origin/main
+
+          echo "📦 Installing backend dependencies..."
           cd backend
           npm install
 
-          echo "🚀 Restarting backend..."
+          echo "🚀 Restarting backend with PM2..."
           pm2 restart server || pm2 start server.js --name server
 
           echo "📦 Building frontend..."
@@ -76,11 +79,11 @@ jobs:
           npm install
           npm run build
 
-          echo "🌐 Deploying frontend..."
+          echo "🌐 Deploying frontend to Nginx..."
           sudo rm -rf /var/www/html/*
           sudo cp -r build/* /var/www/html/
 
           echo "🔁 Restarting Nginx..."
           sudo systemctl restart nginx
 
-          echo "✅ Deployment complete!"
+          echo "✅ Deployment completed successfully!"
