@@ -3,14 +3,13 @@ import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-function VehicleList({ vehicles, fetchVehicles }) {
+function VehicleList({ vehicles, fetchVehicles, setEditVehicle }) {
 
     const deleteVehicle = async (id) => {
 
         try {
 
             await axios.delete(`${API_URL}/vehicles/${id}`);
-
             fetchVehicles();
 
         } catch (error) {
@@ -21,10 +20,8 @@ function VehicleList({ vehicles, fetchVehicles }) {
 
     };
 
-    if (vehicles.length === 0) {
-
+    if (!Array.isArray(vehicles) || vehicles.length === 0) {
         return <p className="empty">No vehicles added yet.</p>;
-
     }
 
     return (
@@ -36,7 +33,6 @@ function VehicleList({ vehicles, fetchVehicles }) {
             <table className="vehicle-table">
 
                 <thead>
-
                     <tr>
                         <th>Make</th>
                         <th>Model</th>
@@ -44,12 +40,11 @@ function VehicleList({ vehicles, fetchVehicles }) {
                         <th>Mileage (km)</th>
                         <th>Action</th>
                     </tr>
-
                 </thead>
 
                 <tbody>
 
-                    {(Array.isArray(vehicles) ? vehicles : [])?.map(vehicle => (
+                    {vehicles.map(vehicle => (
 
                         <tr key={vehicle._id}>
 
@@ -59,6 +54,14 @@ function VehicleList({ vehicles, fetchVehicles }) {
                             <td>{vehicle.mileage}</td>
 
                             <td>
+
+                                {/* ✅ NEW EDIT BUTTON */}
+                                <button
+                                    className="edit-btn"
+                                    onClick={() => setEditVehicle(vehicle)}
+                                >
+                                    Edit
+                                </button>
 
                                 <button
                                     className="delete-btn"

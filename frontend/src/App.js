@@ -11,6 +11,9 @@ function App() {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // ✅ NEW: edit state
+  const [editVehicle, setEditVehicle] = useState(null);
+
   const fetchVehicles = async () => {
 
     try {
@@ -43,12 +46,20 @@ function App() {
 
       <h1>Vehicle Service Tracker</h1>
 
-      <VehicleForm fetchVehicles={fetchVehicles} />
+      <VehicleForm
+        fetchVehicles={fetchVehicles}
+        editVehicle={editVehicle}
+        setEditVehicle={setEditVehicle}
+      />
 
       {loading ? (
         <p className="loading">Loading vehicles...</p>
       ) : (
-        <VehicleList vehicles={vehicles} fetchVehicles={fetchVehicles} />
+        <VehicleList
+          vehicles={vehicles}
+          fetchVehicles={fetchVehicles}
+          setEditVehicle={setEditVehicle} // ✅ pass edit handler
+        />
       )}
 
     </div>

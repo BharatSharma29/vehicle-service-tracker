@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-function VehicleForm({ fetchVehicles }) {
+function VehicleForm({ fetchVehicles, editVehicle, setEditVehicle }) {
 
     const currentYear = new Date().getFullYear();
 
@@ -16,6 +16,18 @@ function VehicleForm({ fetchVehicles }) {
 
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+
+    // ✅ Populate form when editing
+    useEffect(() => {
+        if (editVehicle) {
+            setVehicle({
+                make: editVehicle.make,
+                model: editVehicle.model,
+                year: editVehicle.year,
+                mileage: editVehicle.mileage
+            });
+        }
+    }, [editVehicle]);
 
     const handleChange = (e) => {
 
@@ -40,37 +52,36 @@ function VehicleForm({ fetchVehicles }) {
             return `Year must be between 1900 and ${currentYear}.`;
         }
 
-        if (vehicle.mileage <= 0) {
-            return "Mileage must be a positive number.";
+        if (vehicle.mileage < 0) {
+            return "Mileage cannot be negative.";
         }
 
         return null;
-
     };
 
-    const submitVehicle = async (e) => {
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
-
-        setError("");
-        setMessage("");
 
         const validationError = validateForm();
 
         if (validationError) {
-
             setError(validationError);
+            setMessage("");
             return;
-
         }
 
         try {
 
-            await axios.post(`${API_URL}/vehicles`, vehicle);
-
-            setMessage("Vehicle added successfully ✓");
-
-            fetchVehicles();
+            if (editVehicle) {
+                // ✅ UPDATE
+                await axios.put(`${API_URL}/vehicles/${editVehicle._id}`, vehicle);
+                setMessage("Vehicle updated successfully!");
+            } else {
+                // CREATE
+                await axios.post(`${API_URL}/vehicles`, vehicle);
+                setMessage("Vehicle added successfully!");
+            }
 
             setVehicle({
                 make: "",
@@ -79,68 +90,55 @@ function VehicleForm({ fetchVehicles }) {
                 mileage: ""
             });
 
-            setTimeout(() => {
-                setMessage("");
-            }, 3000);
+            setEditVehicle(null); // reset edit mode
+            setError("");
+            fetchVehicles();
 
-        } catch (err) {
+        } catch (error) {
 
-            console.error(err);
-
-            setError("Failed to add vehicle.");
+            console.error("Error:", error);
+            setError("Something went wrong.");
+            setMessage("");
 
         }
 
     };
 
+    const handleCancel = () => {
+        setEditVehicle(null);
+        setVehicle({
+            make: "",
+            model: "",
+            year: "",
+            mileage: ""
+        });
+    };
+
     return (
 
-        <div>
+        <form className="form" onSubmit={handleSubmit}>
 
-            <form onSubmit={submitVehicle}>
+            <h2>{editVehicle ? "Edit Vehicle" : "Add Vehicle"}</h2>
 
-                <input
-                    name="make"
-                    placeholder="Make"
-                    value={vehicle.make}
-                    onChange={handleChange}
-                    required
-                />
+            <input name="make" value={vehicle.make} onChange={handleChange} placeholder="Make" required />
+            <input name="model" value={vehicle.model} onChange={handleChange} placeholder="Model" required />
+            <input name="year" value={vehicle.year} onChange={handleChange} type="number" placeholder="Year" required />
+            <input name="mileage" value={vehicle.mileage} onChange={handleChange} type="number" placeholder="Mileage" required />
 
-                <input
-                    name="model"
-                    placeholder="Model"
-                    value={vehicle.model}
-                    onChange={handleChange}
-                    required
-                />
+            <button type="submit">
+                {editVehicle ? "Update Vehicle" : "Add Vehicle"}
+            </button>
 
-                <input
-                    name="year"
-                    type="number"
-                    placeholder="Year"
-                    value={vehicle.year}
-                    onChange={handleChange}
-                    required
-                />
+            {editVehicle && (
+                <button type="button" onClick={handleCancel}>
+                    Cancel
+                </button>
+            )}
 
-                <input
-                    name="mileage"
-                    type="number"
-                    placeholder="Mileage"
-                    value={vehicle.mileage}
-                    onChange={handleChange}
-                    required
-                />
+            {message && <p className="success">{message}</p>}
+            {error && <p className="error">{error}</p>}
 
-                <button type="submit">Add Vehicle</button>
-
-            </form>
-
-            {message && <p className="success-message">{message}</p>}
-            {error && <p className="error-message">{error}</p>}
-
-        </div>
+        </form>
 
     );
 
