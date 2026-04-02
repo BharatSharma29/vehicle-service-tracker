@@ -118,7 +118,7 @@ function VehicleForm({ fetchVehicles, editVehicle, setEditVehicle }) {
 
         <form className="form" onSubmit={handleSubmit}>
 
-            <h2>{editVehicle ? "Edit Vehicle" : "Add Vehicle"}</h2>
+            <h2>{editVehicle ? "Edit Vehicle" : "Add Car"}</h2>
 
             <input name="make" value={vehicle.make} onChange={handleChange} placeholder="Make" required />
             <input name="model" value={vehicle.model} onChange={handleChange} placeholder="Model" required />
@@ -126,7 +126,7 @@ function VehicleForm({ fetchVehicles, editVehicle, setEditVehicle }) {
             <input name="mileage" value={vehicle.mileage} onChange={handleChange} type="number" placeholder="Mileage" required />
 
             <button type="submit">
-                {editVehicle ? "Update Vehicle" : "Add Vehicle"}
+                {editVehicle ? "Update Vehicle" : "Add Car"}
             </button>
 
             {editVehicle && (
